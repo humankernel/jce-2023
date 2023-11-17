@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+
+		<title>jce - by strange-devel</title>
+
+		<link rel="stylesheet" href="dist/reset.css" />
+		<link rel="stylesheet" href="dist/reveal.css" />
+		<link rel="stylesheet" href="dist/theme/night.css" />
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css" />
+
+		<style>
+			.text-gradient {
+				font-weight: 800;
+				background: linear-gradient(to right, #ff8a00 0%, #ed11f6 100%);
+				background-clip: text;
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<!-- TITLE -->
+				<section>
+					<aside class="notes">
+						QUIEN SABE QUE ES UNA API O UN CRUD?
+					</aside>
+
+					Creando una API con
+					<span class="text-gradient">Node.js + Express</span> 😎
+				</section>
+
+				<!-- API -->
+				<section>
+					<h2>Que es una <span class="text-gradient">API</span> ?</h2>
+					<h1>🤔</h1>
+				</section>
+				<section data-auto-animate>
+					<section data-auto-animate>
+						<h2 class="text-gradient">API</h2>
+					</section>
+					<section data-auto-animate>
+						<h2 class="text-gradient">API</h2>
+						<h3>Application</h3>
+					</section>
+					<section data-auto-animate>
+						<h2 class="text-gradient">API</h2>
+						<h3>Application</h3>
+						<h3>Program</h3>
+					</section>
+					<section data-auto-animate>
+						<h2 class="text-gradient">API</h2>
+						<h3>Application</h3>
+						<h3>Program</h3>
+						<h3>Interface</h3>
+					</section>
+					<aside class="notes">
+						Una API es un intermediario entre dos sistemas, que
+						permite que una aplicación se comunique con otra y pida
+						datos o acciones específicas.
+					</aside>
+				</section>
+
+				<!-- CRUD -->
+				<section>
+					<section>
+						<h3>
+							Estaremos creando un
+							<span class="text-gradient">CRUD</span>
+						</h3>
+
+						<p>
+							CRUD se refiere a las 4️⃣ operaciones básicas que se
+							pueden realizar en una <u>base de datos</u> 📂 o en
+							la capa de persistencia de un software
+						</p>
+						<p>
+							Estas operaciones son la base de la mayoría de las
+							aplicaciones web
+						</p>
+					</section>
+					<section>
+						<h3>
+							<span class="text-gradient" data-id="c">C</span>
+							<span class="text-gradient" data-id="r">R</span>
+							<span class="text-gradient" data-id="u">U</span>
+							<span class="text-gradient" data-id="d">D</span>
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<h3>
+							<span class="text-gradient" data-id="c"
+								>C (create)</span
+							>
+							<span data-id="r">R</span>
+							<span data-id="u">U</span>
+							<span data-id="d">D</span>
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<h3>
+							<span data-id="c">C</span>
+							<span class="text-gradient" data-id="r"
+								>R (read)</span
+							>
+							<span data-id="u">U</span>
+							<span data-id="d">D</span>
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<h3>
+							<span data-id="c">C</span>
+							<span data-id="r">R</span>
+							<span class="text-gradient" data-id="u"
+								>U (update)</span
+							>
+							<span data-id="d">D</span>
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<h3>
+							<span data-id="c">C</span>
+							<span data-id="r">R</span>
+							<span data-id="u">U</span>
+							<span class="text-gradient" data-id="d"
+								>D (delete)</span
+							>
+						</h3>
+					</section>
+				</section>
+
+				<!-- INSTALLATION -->
+				<section>
+					<h2 class="text-gradient">1. Instalacion</h2>
+					<pre>
+						<code data-trim data-line-numbers="1|2">
+							npm install express postgres zod cors dotenv 
+							npm install @types/node @types/express @types/cors
+						</code>
+					</pre>
+				</section>
+
+				<!-- PACKAGES -->
+				<section>
+					Libraries Used
+
+					<section data-markdown>
+						<textarea data-template>
+						```json [13: 3|4,6|7|10|]
+							//package.json
+							...
+							"dependencies": {
+								"@types/node": "^20.8.9",
+								"@types/express": "^4.17.20",
+								"@types/cors": "^2.8.15",
+								"express": "4.18.2",
+								"postgres": "3.4.2",
+								"dotenv": "16.3.1",
+								"cors": "2.8.5",
+								"zod": "3.22.4"
+							}
+						```
+						</textarea
+						>
+					</section>
+				</section>
+
+				<!-- FILE STRUCTURE -->
+				<section
+					data-background-gradient="linear-gradient(to right bottom, rgb(1, 4, 9), rgb(17, 109, 61, 0.3))"
+				>
+					<img width="1300" src="images/file-structure.png" />
+				</section>
+
+				<!-- INIT -->
+				<section data-markdown>
+					<aside class="notes">
+						1. Importamos express 2. Creamos la app 3. Creamos una
+						ruta en el path "/" 4. Iniciamos el servidor en el
+						puerto 3000
+					</aside>
+					<textarea data-template>
+						```js [1: 1|3|6-8|10-13]
+						import express from "express";
+
+						const app = express();
+						app.disable("x-powered-by");
+						
+						app.get("/", (req, res) => {
+							res.json({ message: "👋 api created by strange-devel" });
+						});
+						
+						const PORT = 3000;
+						app.listen(PORT, () => {
+							console.log(`server listen on port http://localhost:${PORT}`);
+						});
+						```
+					</textarea
+					>
+				</section>
+				<section>
+					<section>
+						Abrimos el navegador en
+						<a href="http://localhost:3000" target="_blank"
+							>http://localhost:3000</a
+						>
+					</section>
+
+					<section>
+						<img src="images/root.png" />
+						<p>
+							Acabamos de crear un
+							<span class="text-gradient">"endpoint"</span>
+						</p>
+					</section>
+				</section>
+
+				<!-- CREATING OTHER ROUTES -->
+				<section data-auto-animate>
+					<section data-markdown>
+						<textarea data-template>
+							```js [1: 10-14|10|11|12|13|14]
+							import express from "express";
+							
+							const app = express();
+							app.disable("x-powered-by");
+							
+							app.get("/", (req, res) => {
+								res.json({ message: "👋 api created by strange-devel" });
+							});
+							
+							app.get("/notes", (req, res) => {});
+							app.get("/notes/:id", (req, res) => {});
+							app.post("/notes/", (req, res) => {});
+							app.patch("/notes/:id", (req, res) => {});
+							app.delete("/notes/:id", (req, res) => {});
+							
+							const PORT = 3000;
+							app.listen(PORT, () => {
+								console.log(`server listen on port http://localhost:${PORT}`);
+							});
+						```
+						</textarea
+						>
+					</section>
+				</section>
+
+				<!-- CREATING DB -->
+				<section>
+					<h3>
+						3. Crear la
+						<span class="text-gradient"> Base de Datos </span>
+					</h3>
+				</section>
+				<section data-auto-animate>
+					<section>
+						<h4>
+							Un Poco de
+							<span class="text-gradient">SQL (squeal)</span>
+						</h4>
+					</section>
+					<section data-markdown>
+						<aside class="notes">
+							1. Creamos la base de datos 2. Creamos la tabla 3.
+							La poblamos
+						</aside>
+						<textarea data-template>
+							```sql [1: 1|2-8|9-24]
+							CREATE DATABASE notes_db;
+							CREATE TABLE IF NOT EXISTS notes
+							(
+								"id"   UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+								"name" VARCHAR(255) NOT NULL UNIQUE,
+								"date" DATE         NOT NULL,
+								"desc" TEXT         NOT NULL
+							);
+							INSERT INTO notes ("name", "date", "desc")
+							VALUES ('Reunión con el equipo',
+									'2023-11-20',
+									'Discutir los avances del proyecto'),
+								   ('Llamada con el cliente',
+									'2023-11-21',
+									'Presentar la propuesta de diseño'),
+								   ('Revisión de código',
+									'2023-11-22',
+									'Revisar el nuevo módulo implementado'),
+								   ('Entrega de informe',
+									'2023-11-23',
+									'Entregar el informe de progreso semanal'),
+								   ('Planificación del sprint',
+									'2023-11-24',
+									'Planificar las tareas para el próximo sprint');
+							```
+						</textarea
+						>
+					</section>
+				</section>
+
+				<!-- WHAT IS REST -->
+				<section>
+					<section>
+						<h3>
+							4. Ahora vamos a implementar el
+							<span class="text-gradient">CRUD</span> 😬
+						</h3>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Pero primero que es
+							<span class="text-gradient">REST API</span> ?
+						</p>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Pero primero que es
+							<span class="text-gradient">REST API</span> ?
+						</p>
+						<p>
+							Que es
+							<span class="text-gradient"
+								>GET, POST, PATCH, DELETE</span
+							>
+						</p>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Pero primero que es
+							<span class="text-gradient">REST API</span> ?
+						</p>
+						<p>
+							Que es
+							<span class="text-gradient"
+								>GET, POST, PATCH, DELETE</span
+							>
+						</p>
+						<div style="font-size: 8rem">🤯</div>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Pero primero que es
+							<span class="text-gradient">REST API</span> ?
+						</p>
+						<p style="font-size: 2rem">
+							<span class="text-gradient"
+								>Representational State Transfer</span
+							>
+							es una Arquitectura de Software
+						</p>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Pero primero que es
+							<span class="text-gradient">REST API</span> ?
+						</p>
+						<p style="font-size: 2rem">
+							<span class="text-gradient"
+								>Representational State Transfer</span
+							>
+							es una Arquitectura de Software
+						</p>
+						<p>
+							Se basa en
+							<span class="text-gradient">6</span> Principios
+						</p>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Se basa en
+							<span class="text-gradient">6</span> Principios
+						</p>
+						<ol>
+							<li>Visibilidad</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Se basa en
+							<span class="text-gradient">6</span> Principios
+						</p>
+						<ol>
+							<li>Visibilidad</li>
+							<li>Simplicidad</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Se basa en
+							<span class="text-gradient">5</span> Principios
+						</p>
+						<ol>
+							<li>Visibilidad</li>
+							<li>Simplicidad</li>
+							<li>Escalabilidad</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Se basa en
+							<span class="text-gradient">5</span> Principios
+						</p>
+						<ol>
+							<li>Visibilidad</li>
+							<li>Simplicidad</li>
+							<li>Escalabilidad</li>
+							<li>Portabilidad</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<p>
+							Se basa en
+							<span class="text-gradient">5</span> Principios
+						</p>
+						<ol>
+							<li>Visibilidad</li>
+							<li>Simplicidad</li>
+							<li>Escalabilidad</li>
+							<li>Portabilidad</li>
+							<li>Fiabilidad</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<aside class="notes">
+							estos principios tienen el objetivo de crear
+							software que dure en el tiempo
+						</aside>
+						<p>
+							Se basa en
+							<span class="text-gradient">5</span> Principios
+						</p>
+						<ol>
+							<li>Visibilidad</li>
+							<li>Simplicidad</li>
+							<li>Escalabilidad</li>
+							<li>Portabilidad</li>
+							<li>Fiabilidad</li>
+							<li>Facil de Modificar</li>
+						</ol>
+					</section>
+				</section>
+
+				<!-- REST - FUNDAMENTS -->
+				<section>
+					<section data-auto-animate>
+						<p>
+							Pero cuales son los
+							<span class="text-gradient">fundamentos</span> ?
+						</p>
+					</section>
+					<section data-auto-animate>
+						<ul>
+							<li>
+								Todo es un
+								<span class="text-gradient">recurso</span>
+
+								<div
+									style="
+										font-size: 1.5rem;
+										color: rgba(255, 255, 255, 0.5);
+									"
+								>
+									<p>
+										-> por ejemplo un libro o un usuario o
+										una coleccion de recursos
+									</p>
+
+									<p>
+										-> cada recurso se identifica con una
+										url
+									</p>
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section data-auto-animate>
+						<ul>
+							<li>
+								Verbos
+								<span class="text-gradient">HTTP</span>
+
+								<div
+									style="
+										font-size: 1.5rem;
+										color: rgba(255, 255, 255, 0.5);
+									"
+								>
+									<p>
+										-> para definir las operaciones que se
+										pueden realizar con los recursos
+									</p>
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section data-auto-animate>
+						<ul>
+							<li>
+								<span class="text-gradient"
+									>Representaciones</span
+								>
+
+								<div
+									style="
+										font-size: 1.5rem;
+										color: rgba(255, 255, 255, 0.5);
+									"
+								>
+									<p>-> json, xml, html, ...</p>
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section data-auto-animate>
+						<ul>
+							<li>
+								<span class="text-gradient">Stateless</span>
+
+								<div
+									style="
+										font-size: 1.5rem;
+										color: rgba(255, 255, 255, 0.5);
+									"
+								>
+									<p>
+										-> el servidor no debe mantener ningun
+										estado sobre el cliente entre
+										solicitudes
+									</p>
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section data-auto-animate>
+						<ul>
+							<li>
+								<span class="text-gradient"
+									>Interfaz Uniforme</span
+								>
+
+								<div
+									style="
+										font-size: 1.5rem;
+										color: rgba(255, 255, 255, 0.5);
+									"
+								>
+									<p>
+										-> las url siempre tienen que hacer lo
+										mismo
+									</p>
+								</div>
+							</li>
+						</ul>
+					</section>
+					<section data-auto-animate>
+						<ul>
+							<li>
+								Separacion de
+								<span class="text-gradient">Conceptos</span>
+
+								<div
+									style="
+										font-size: 1.5rem;
+										color: rgba(255, 255, 255, 0.5);
+									"
+								>
+									<p>
+										-> permite que el cliente y el servidor
+										evolucione de forma separada
+									</p>
+								</div>
+							</li>
+						</ul>
+					</section>
+				</section>
+
+				<!-- IMPLEMENTING ROUTES -->
+				<section>
+					<h3>
+						3. Vamos a implementar las
+						<span class="text-gradient">rutas</span>
+					</h3>
+					<img src="images/file-structure2.png" />
+					<p style="font-size: 2rem">
+						Para eso creamos un nuevo archivo para que todo quede
+						mas organizado
+					</p>
+				</section>
+
+				<section>
+					<section data-markdown>
+						<textarea data-template data-auto-animate>
+							```js [1:]
+							// controllers/notes.js
+							export class NotesController {
+								static getAll = async (req, res) => {};
+								static getById = async (req, res) => {};
+								static create = async (req, res) => {};
+								static update = async (req, res) => {};
+								static delete = async (req, res) => {};
+							}
+							```
+						</textarea
+						>
+					</section>
+					<section data-markdown>
+						<textarea data-template data-auto-animate>
+							```js [1: 3|4|5|6|7]
+							// index.js
+							...
+							app.get("/notes", NotesController.getAll);
+							app.get("/notes/:id", NotesController.getById);
+							app.post("/notes/", NotesController.create);
+							app.patch("/notes/:id", NotesController.update);
+							app.delete("/notes/:id", NotesController.delete);
+							...
+							```
+						</textarea
+						>
+					</section>
+					<section data-auto-animate>
+						<pre data-id="code-animation">
+							<code data-trim data-line-numbers>
+								// controllers/notes.js
+								export class NotesController {
+									static getAll = async (req, res) => {};
+									static getById = async (req, res) => {};
+									static create = async (req, res) => {};
+									static update = async (req, res) => {};
+									static delete = async (req, res) => {};
+								}
+							</code> 
+						</pre>
+					</section>
+					<section data-auto-animate>
+						<pre data-id="code-animation">
+							<code data-trim data-line-numbers="3-12|4|6|8-10|12|">
+								// controllers/notes.js
+								export class NotesController {
+									static getAll = async (req, res) => {
+										const { name } = req.query;
+
+										const articles = await sql`SELECT * FROM notes;`;
+
+										const filteredArticles = articles.filter((article) =>
+											article.name.toLowerCase().includes(name.toLowerCase())
+										);
+
+										res.json(filteredArticles);
+									};
+									static getById = async (req, res) => {};
+									static create = async (req, res) => {};
+									static update = async (req, res) => {};
+									static delete = async (req, res) => {};
+								}
+							</code> 
+						</pre>
+					</section>
+					<section data-auto-animate>
+						<pre data-id="code-animation">
+							<code data-trim data-line-numbers="4-11|5|6|8|10|">
+								// controllers/notes.js
+								export class NotesController {
+									static getAll = async (req, res) => {...};
+									static getById = async (req, res) => {
+										const { id } = req.params;
+										const note = await sql`SELECT * FROM notes WHERE id = ${id}`;
+
+										if (!note) res.status(404).json({ message: "Note not found" });
+
+										return res.json(note);
+									};
+									static create = async (req, res) => {};
+									static update = async (req, res) => {};
+									static delete = async (req, res) => {};
+								}
+							</code> 
+						</pre>
+					</section>
+					<section data-auto-animate>
+						<pre data-id="code-animation">
+							<code data-trim data-line-numbers="5-25|6|8-11|13|14|15-18|19|21-22|24|">
+								// controllers/notes.js
+								export class NotesController {
+									static getAll = async (req, res) => {...};
+									static getById = async (req, res) => {...};
+									static create = async (req, res) => {
+										const result = validateArticle(req.body);
+
+										if (result.error)
+											return res
+												.status(422)
+												.json({ error: JSON.parse(result.error.message) });
+
+										const { name, date, desc } = result.data;
+										const [{ uuid: id }] = await sql`SELECT gen_random_uuid() uuid;`;
+										await sql`
+											INSERT INTO notes ("id", "name", "date", "desc")
+											VALUES (${id}, ${name}, ${date}, ${desc}),
+											`;
+										const note = await sql`SELECT * FROM notes WHERE id = ${id}`;
+
+										if (!note)
+											return res.status(400).json({ error: "Error while creating note" });
+
+										res.status(201).json(note);
+									};
+									static update = async (req, res) => {};
+									static delete = async (req, res) => {};
+								}
+							</code> 
+						</pre>
+					</section>
+					<section data-auto-animate>
+						<pre data-id="code-animation">
+							<code data-trim data-line-numbers="6-33|7|9-12|14|15|17-20|22|24-30|32|">
+								// controllers/notes.js
+								export class NotesController {
+									static getAll = async (req, res) => {...};
+									static getById = async (req, res) => {...};
+									static create = async (req, res) => {...};
+									static update = async (req, res) => {
+										const result = validatePartialArticle(req.body);
+
+										if (result.error)
+											return res
+												.status(422)
+												.json({ error: JSON.parse(result.error.message) });
+
+										const { id } = req.params;
+										const note = await sql`SELECT * FROM notes WHERE id = ${id}`;
+
+										const updatedNote = {
+											...note,
+											...result.data,
+										};
+
+										const { name, date, desc } = updatedNote;
+
+										await sql`
+											UPDATE notes
+											SET name = ${name},
+												date = ${date},
+												desc = ${desc},
+											WHERE id = ${id}
+										`;
+
+										return res.json(updatedNote);
+									};
+									static delete = async (req, res) => {};
+								}
+							</code> 
+						</pre>
+					</section>
+					<section data-auto-animate>
+						<pre data-id="code-animation">
+							<code data-trim data-line-numbers="7-15|8|10|12|14|">
+								// controllers/notes.js
+								export class NotesController {
+									static getAll = async (req, res) => {...};
+									static getById = async (req, res) => {...};
+									static create = async (req, res) => {...};
+									static update = async (req, res) => {...};
+									static delete = async (req, res) => {
+										const { id } = req.params;
+
+										const result = await sql`DELETE FROM notes WHERE id = ${id}`;
+
+										if (!result) return res.status(404).json({ message: "Note not found" });
+
+										return res.json({ message: "Note deleted " });
+									};
+								}
+							</code> 
+						</pre>
+					</section>
+				</section>
+
+				<!-- TEST -->
+				<section>
+					<h3>
+						Ahora vamos a probar la
+						<span class="text-gradient">API</span>
+					</h3>
+				</section>
+				<section>
+					<section>
+						<p>Si usas <span class="text-gradient">vscode</span></p>
+						<img src="images/vscode-ext.png" />
+					</section>
+					<section data-auto-animate>
+						<p>
+							<span class="text-gradient">(Read)</span> Obten las
+							notas
+						</p>
+						<pre
+							data-id="code-animation"
+						><code data-trim data-line-numbers>
+							GET http://localhost:3000/notes
+						</code></pre>
+					</section>
+					<section data-auto-animate>
+						<p>
+							<span class="text-gradient">(Read)</span> Obten una
+							nota por id
+						</p>
+						<pre
+							data-id="code-animation"
+						><code data-trim data-line-numbers>
+							GET http://localhost:3000/notes/[id]
+						</code></pre>
+					</section>
+					<section data-auto-animate>
+						<p>
+							<span class="text-gradient">(create)</span> Crea una
+							nota
+						</p>
+						<pre
+							data-id="code-animation"
+						><code data-trim data-line-numbers>
+							POST http://localhost:3000/notes
+							Content-Type: application/json
+
+							{
+							"name": "Prueba",
+							"date": "2023-11-20",
+							"brand": "Estudiar todo"
+							}
+						</code></pre>
+					</section>
+					<section data-auto-animate>
+						<p>
+							<span class="text-gradient">(update)</span>
+							Actualiza una nota
+						</p>
+						<pre
+							data-id="code-animation"
+						><code data-trim data-line-numbers>
+							PATCH http://localhost:3000/notes/[id]
+							Content-Type: application/json
+
+							{
+							"name": "Prueba Nueva"
+							}
+						</code></pre>
+					</section>
+					<section data-auto-animate>
+						<p>
+							<span class="text-gradient">(delete)</span>
+							Elimina una nota
+						</p>
+						<pre
+							data-id="code-animation"
+						><code data-trim data-line-numbers>
+							DELETE http://localhost:3000/notes/[id]
+						</code></pre>
+					</section>
+				</section>
+
+				<!-- IN BRIEF -->
+				<section>
+					<section data-auto-animate>
+						<h3>En resumen</h3>
+						<p>vimos como</p>
+					</section>
+					<section data-auto-animate>
+						<h3>En resumen</h3>
+						<p>vimos como</p>
+						<ol>
+							<li>
+								Que es una
+								<span class="text-gradient">API</span>
+							</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<h3>En resumen</h3>
+						<p>vimos como</p>
+						<ol>
+							<li>
+								Que es una
+								<span class="text-gradient">API</span>
+							</li>
+							<li>
+								Que es
+								<span class="text-gradient">REST</span>
+							</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<h3>En resumen</h3>
+						<p>vimos como</p>
+						<ol>
+							<li>
+								Que es una
+								<span class="text-gradient">API</span>
+							</li>
+							<li>
+								Que es
+								<span class="text-gradient">REST</span>
+							</li>
+							<li>
+								Como inicializar un projecto de
+								<span class="text-gradient"
+									>Node.js + Express</span
+								>
+							</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<h3>En resumen</h3>
+						<p>vimos como</p>
+						<ol>
+							<li>
+								Que es una
+								<span class="text-gradient">API</span>
+							</li>
+							<li>
+								Que es
+								<span class="text-gradient">REST</span>
+							</li>
+							<li>
+								Como inicializar un projecto de
+								<span class="text-gradient"
+									>Node.js + Express</span
+								>
+							</li>
+							<li>
+								Crear un simple
+								<span class="text-gradient">CRUD</span>
+							</li>
+						</ol>
+					</section>
+					<section data-auto-animate>
+						<h3>En resumen</h3>
+						<p>vimos como</p>
+						<ol>
+							<li>
+								Que es una
+								<span class="text-gradient">API </span>
+							</li>
+							<li>
+								Que es
+								<span class="text-gradient">REST </span>
+							</li>
+							<li>
+								Como inicializar un projecto de
+								<span class="text-gradient"
+									>Node.js + Express
+								</span>
+							</li>
+							<li>
+								Crear un simple
+								<span class="text-gradient">CRUD</span>
+							</li>
+							<li>
+								Validar datos con
+								<span class="text-gradient">Zod </span>
+							</li>
+						</ol>
+					</section>
+				</section>
+
+				<!-- END -->
+
+				<section>
+					<h3>Recomendaciones 👀</h3>
+					<ul>
+						<li style="display: flex; flex-direction: column">
+							<a
+								href="https://www.youtube.com/playlist?list=PLUofhDIg_38qm2oPOV-IRTTEKyrVBBaU7"
+								>👆🏻 MuduDev Course Playlist</a
+							>
+							<img
+								src="images/midudev.jpg"
+								style="border-radius: 1rem"
+							/>
+						</li>
+					</ul>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+			});
+		</script>
+	</body>
+</html>
